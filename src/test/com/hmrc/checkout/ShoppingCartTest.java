@@ -17,7 +17,7 @@ public class ShoppingCartTest {
 	private final SHOPPINGCARTITEMS orange = SHOPPINGCARTITEMS.ORANGE;
 	private final BigDecimal priceOfApple = new BigDecimal(0.60);
 	private final BigDecimal priceOfOrange = new BigDecimal(0.25);
-	private String[] validCheckeOutItems = {"APPLE", "APPLE", "ORANGE", "APPLE"}; 
+	private String[] validCheckeOutItems = {"ORANGE", "ORANGE", "ORANGE", "ORANGE", "ORANGE", "ORANGE", "APPLE", "APPLE", "ORANGE", "ORANGE", "ORANGE", "ORANGE"};
 	private String[] inValidCheckeOutItems = {"APPLE", "APPLE", "KIWI", "PASSION-FRUIT"};
 	
 	private ShoppingCart shoppingCart;
@@ -45,24 +45,52 @@ public class ShoppingCartTest {
 	@Test 
  	public void testTheTotalPriceOfItemsWhichAreEligibleToCheckOut() throws ItemNotFoundException {
 		Assert.assertNotNull(shoppingCart);			
-		Assert.assertEquals(Double.valueOf(2.05D), shoppingCart.checkOutItems(validCheckeOutItems));
+		Assert.assertEquals(Double.valueOf(2.35), shoppingCart.checkOutItems(validCheckeOutItems));
 	}
 	
 	@Test 
  	public void testTheTotalPriceOfCheckOutItemsWhichAreEligibleButWithWrongCalculation() throws ItemNotFoundException {
 		Assert.assertNotNull(shoppingCart);			
-		Assert.assertNotSame(2.05D+1D, shoppingCart.checkOutItems(validCheckeOutItems));
+		Assert.assertNotSame(Double.valueOf(2.05+1), shoppingCart.checkOutItems(validCheckeOutItems));
 	}	
 	
 	@Test
 	public void testTheCheckOutItemsWhichHasInvalidItemInBasketToThrowInvalidItemException() {
 		Assert.assertNotNull(shoppingCart);				
-		try {
-			shoppingCart.checkOutItems(inValidCheckeOutItems);
+		try {			
+			Assert.assertEquals("INVALID_ITEM", shoppingCart.checkOutItems(inValidCheckeOutItems)); 
 		}
 		catch(ItemNotFoundException inf) {
 			Assert.assertEquals(inf.getMessage(), ShoppingCart.INVALID_ITEM_MESSAGE);
 		}		
+	}
+	@Test
+	public void testTheSimpleOfferAppliedAgainstTheItemAppleWorkAsExpected() throws ItemNotFoundException {
+		Assert.assertNotNull(shoppingCart);
+		validCheckeOutItems = new String[] {"APPLE", "APPLE"};
+		Assert.assertEquals(Double.valueOf(0.60), shoppingCart.checkOutItems(validCheckeOutItems));
+		validCheckeOutItems = new String[] {"APPLE", "APPLE", "APPLE"};
+		Assert.assertEquals(Double.valueOf(0.60+0.60), shoppingCart.checkOutItems(validCheckeOutItems));
+		validCheckeOutItems = new String[] {"APPLE", "APPLE", "APPLE", "APPLE"};
+		Assert.assertEquals(Double.valueOf(0.60+0.60), shoppingCart.checkOutItems(validCheckeOutItems));
+	}
+	
+	@Test
+	public void testTheSimpleOfferAppliedAgainstTheItemOrangeWorkAsExpected() throws ItemNotFoundException {
+		Assert.assertNotNull(shoppingCart);
+		validCheckeOutItems = new String[] {"ORANGE", "ORANGE"};
+		Assert.assertEquals(Double.valueOf(0.50), shoppingCart.checkOutItems(validCheckeOutItems));
+		validCheckeOutItems = new String[] {"ORANGE", "ORANGE", "ORANGE"};
+		Assert.assertEquals(Double.valueOf(0.50), shoppingCart.checkOutItems(validCheckeOutItems));
+		validCheckeOutItems = new String[] {"ORANGE", "ORANGE", "ORANGE", "ORANGE"};
+		Assert.assertEquals(Double.valueOf(0.75), shoppingCart.checkOutItems(validCheckeOutItems));
+	}
+	
+	@Test
+	public void testTheSimpleOffersWorkForTheCombinationOfCheckOutItemsAppleAndOrange() throws ItemNotFoundException{
+		Assert.assertNotNull(shoppingCart);
+		Assert.assertEquals(Double.valueOf(2.35), shoppingCart.checkOutItems(validCheckeOutItems));
+		
 	}
 
 }

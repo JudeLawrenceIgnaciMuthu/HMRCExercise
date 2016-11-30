@@ -18,19 +18,31 @@ public class ShoppingCart {
 	
 	public Double checkOutItems (String[] checkOutItems) throws ItemNotFoundException  {
 		BigDecimal totalPrice = new BigDecimal(0.0);
-		for(String item : checkOutItems) {
-			try {
+		boolean appleFound, orangeFound;
+		int appleCnt=0, orangeCnt = 0;
+		try {
+			for(String item : checkOutItems) {				
 				if(priceList.containsKey(SHOPPINGCARTITEMS.valueOf(item))) {
-					totalPrice = totalPrice.add(getPriceList().get(SHOPPINGCARTITEMS.valueOf(item)));
+					appleFound= false; orangeFound = false;
+					if(item.equals(SHOPPINGCARTITEMS.APPLE.name())) {
+                        appleFound = true; 
+                        appleCnt++;
+					}
+					else {
+						orangeFound = true;
+						orangeCnt++;
+					}					
+					if(appleFound&&appleCnt%2!=0 || orangeFound&&orangeCnt%3!=0) {
+						totalPrice = totalPrice.add(getPriceList().get(SHOPPINGCARTITEMS.valueOf(item)));
+					}
 				}
 			}
-			catch(IllegalArgumentException iae) {
-				throw new ItemNotFoundException(INVALID_ITEM_MESSAGE);
-			}
+		}
+		catch(IllegalArgumentException iae) {
+			throw new ItemNotFoundException(INVALID_ITEM_MESSAGE);
 		}
 		totalPrice = totalPrice.setScale(2, BigDecimal.ROUND_HALF_UP);
 		return totalPrice.doubleValue();
-		
 	}
 
 	public EnumMap<SHOPPINGCARTITEMS, BigDecimal> getPriceList() {
